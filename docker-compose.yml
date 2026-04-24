@@ -1,0 +1,21 @@
+services:
+  rag:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      # Claude CLI auth token. Required for /ask to function.
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    volumes:
+      # Mount docs read-only so you can swap corpora without rebuilding.
+      - ./data/docs:/app/data/docs:ro
+      # Persist the Chroma store across container restarts.
+      - rag_chroma:/app/.chroma
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/health').status==200 else 1)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  rag_chroma:

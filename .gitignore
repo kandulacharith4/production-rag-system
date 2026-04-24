@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+.chroma/
+.env
+.venv/
+venv/
+eval/report.json
+eval/candidates.jsonl
+benchmark_results.json
+benchmark_results.md
+.pytest_cache/
+.specstory/
+.claude/
+*.deleteme

@@ -1,0 +1,27 @@
+chunk:
+  size_tokens: 600
+  overlap_tokens: 100
+
+embedding:
+  model: "sentence-transformers/all-MiniLM-L6-v2"
+
+reranker:
+  model: "cross-encoder/ms-marco-MiniLM-L-6-v2"
+  enabled: true
+
+retrieval:
+  vector_top_k: 20
+  bm25_top_k: 20
+  hybrid_alpha: 0.5   # weight for vector vs bm25 (0=bm25 only, 1=vector only)
+  final_top_k: 5
+
+generation:
+  # Passed to `claude --model`. Omit or set to null to use your Claude Code default.
+  model: "claude-haiku-4-5-20251001"
+
+storage:
+  chroma_dir: ".chroma"
+  collection: "docs"
+
+eval:
+  faithfulness_threshold: 0.85
