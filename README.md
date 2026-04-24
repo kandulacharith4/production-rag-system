@@ -150,10 +150,3 @@ Explicit about what this *isn't*, because hiring managers ask:
   follow-ups into standalone queries before retrieval.
 - **Real observability stack** — Prometheus + OTel traces, not in-memory dicts.
 
----
-
-## Credits
-
-Built in one focused pass using [Claude Code](https://docs.claude.com/claude-code)
-as both the coding assistant and the answer-generation backend. The same CLI
-drives local development and the production `/ask` endpoint.
