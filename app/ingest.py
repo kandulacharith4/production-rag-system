@@ -105,12 +105,17 @@ def ingest(doc_root: str | Path, config: dict | None = None) -> dict:
         cfg["storage"]["collection"], embedding_function=ef, metadata={"hnsw:space": "cosine"}
     )
 
+    # Prepend source path to each document so both BM25 and the vector embedder
+    # can associate "pep 572" or "pep-0572" queries with the right file.
+    def _indexed_text(c: Chunk) -> str:
+        return f"[Source: {c.source}]\n{c.text}"
+
     BATCH = 128
     for i in range(0, len(chunks), BATCH):
         batch = chunks[i : i + BATCH]
         coll.add(
             ids=[c.id for c in batch],
-            documents=[c.text for c in batch],
+            documents=[_indexed_text(c) for c in batch],
             metadatas=[{"source": c.source, "ordinal": c.ordinal} for c in batch],
         )
 
@@ -118,7 +123,9 @@ def ingest(doc_root: str | Path, config: dict | None = None) -> dict:
     corpus_path = chroma_dir / "corpus.jsonl"
     with corpus_path.open("w", encoding="utf-8") as f:
         for c in chunks:
-            f.write(json.dumps(asdict(c), ensure_ascii=False) + "\n")
+            row = asdict(c)
+            row["text"] = _indexed_text(c)  # BM25 sees the same prefixed text
+            f.write(json.dumps(row, ensure_ascii=False) + "\n")
 
     return {"chunks": len(chunks), "sources": len({c.source for c in chunks})}
 
